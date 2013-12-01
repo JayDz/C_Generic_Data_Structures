@@ -1,0 +1,19 @@
+This repository contains common data structures and algorithm written in the C language.
+
+Data Structures implemented:
+1. Generic Stack 
+2. Generic Queue
+3. Generic Deque
+4. Generic Set
+5. Singly-linked list
+6. Doubly-linked list
+7. Symbol Tables
+8. Binary Search Tree
+9. Balanced Search Tree (RBT)
+10. Hash Tables
+
+Algorithms implemented:
+1. Insertion/Selection/Bubble sorts
+2. Quicksort
+3. Mergesort
+4. Priority Queue
