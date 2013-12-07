@@ -42,4 +42,7 @@ int JDArrayStack_empty(struct JDArrayStack* s);
 /* returns the number of elements currently in our stack. */
 int JDArrayStack_count(struct JDArrayStack* s);
 
+/* stores values in stack into an array dest. dest should point to block large enough for all stack values */
+void JDArrayStack_array(struct JDArrayStack* s, void* dest);
+
 #endif

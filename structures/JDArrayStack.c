@@ -89,6 +89,20 @@ int JDArrayStack_count(struct JDArrayStack* s)
 	return s->count;
 }
 
+void JDArrayStack_array(struct JDArrayStack* s, void* dest)
+{
+	assert((s != NULL) && (s->elem != NULL));
+
+	if (!s->count) return;
+
+	int i;
+	for (i = 0; i < s->count; ++i) {
+		void* elem_addr = s->elem + (s->elem_size * i);
+		memcpy(dest, elem_addr, s->elem_size);
+		dest = (char*)dest + s->elem_size;
+	}
+}
+
 static void JDArrayStack_resize(struct JDArrayStack* s, size_t nsize)
 {
 	s->elem = realloc(s->elem, nsize * s->elem_size);
