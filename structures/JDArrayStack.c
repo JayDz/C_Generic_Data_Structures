@@ -97,9 +97,20 @@ void JDArrayStack_array(struct JDArrayStack* s, void* dest)
 
 	int i;
 	for (i = 0; i < s->count; ++i) {
-		void* elem_addr = s->elem + (s->elem_size * i);
+		void* elem_addr = (char*)s->elem + (s->elem_size * i);
 		memcpy(dest, elem_addr, s->elem_size);
 		dest = (char*)dest + s->elem_size;
+	}
+}
+
+void JDArrayStack_peek(struct JDArrayStack* s, void* dest)
+{
+	assert(s != NULL);
+	assert(s->count > 0);
+
+	if (s->count) {
+		void* elem_addr = (char*)s->elem + (s->elem_size * (s->count-1));
+		memcpy(dest, elem_addr, s->elem_size);
 	}
 }
 

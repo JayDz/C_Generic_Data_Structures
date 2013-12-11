@@ -45,4 +45,7 @@ int JDArrayStack_count(struct JDArrayStack* s);
 /* stores values in stack into an array dest. dest should point to block large enough for all stack values */
 void JDArrayStack_array(struct JDArrayStack* s, void* dest);
 
+/* return value at the top of stack, without removing it. */
+void JDArrayStack_peek(struct JDArrayStack* s, void* dest);
+
 #endif
