@@ -82,7 +82,7 @@ int JDArrayStack_empty(struct JDArrayStack* s)
 	return TRUE;
 }
 
-int JDArrayStack_count(struct JDArrayStack* s)
+size_t JDArrayStack_count(struct JDArrayStack* s)
 {
 	assert((s != NULL) && (s->elem != NULL));
 	
