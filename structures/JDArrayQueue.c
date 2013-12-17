@@ -1,3 +1,4 @@
+#define NDEBUG
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -42,10 +43,12 @@ static void resize(struct JDArrayQueue* q, size_t nsize)
 	q->array_length = nsize;
 }
 
-void JDArrayQueue_init(struct JDArrayQueue* q, size_t elem_size, void(*dctor)(void*))
+int JDArrayQueue_init(struct JDArrayQueue* q, size_t elem_size, void(*dctor)(void*))
 {
+	if (q == NULL) return JD_NULLPTR;
+
 	q->elem = malloc(elem_size * ARRAY_LENGTH);
-	assert(q->elem != NULL);
+	if (q->elem == NULL) return JD_FMALLOC;
 
 	q->head = 0;
 	q->tail = 0;
@@ -53,12 +56,14 @@ void JDArrayQueue_init(struct JDArrayQueue* q, size_t elem_size, void(*dctor)(vo
 	q->elem_size = elem_size;
 	q->array_length = ARRAY_LENGTH;
 	q->dealloc_elements = dctor;
+
+	return JD_SUCCESS;
 }
 
-void JDArrayQueue_dealloc(struct JDArrayQueue* q)
+int JDArrayQueue_dealloc(struct JDArrayQueue* q)
 {
-	assert((q != NULL) && (q->elem != NULL));
-
+	if ((q == NULL) || (q->elem == NULL)) return JD_NULLPTR;
+	
 	if (q->dealloc_elements) {
 		int i;
 		for (i = 0; i < q->count; ++i) {
@@ -77,11 +82,14 @@ void JDArrayQueue_dealloc(struct JDArrayQueue* q)
 	q->count = 0;
 	q->elem_size = 0;
 	q->array_length = 0;
+
+	return JD_SUCCESS;
 }
 
-void JDArrayQueue_enqueue(struct JDArrayQueue* q, void* value)
+int JDArrayQueue_enqueue(struct JDArrayQueue* q, void* value)
 {
-	assert((q != NULL) && (q->elem != NULL));
+	if ((q == NULL) || (q->elem == NULL)) return JD_NULLPTR;
+	if (value == NULL) return JD_NULLPTR_ARG;
 
 	if (q->count == q->array_length) resize(q, q->array_length * 2);
 	
@@ -91,12 +99,15 @@ void JDArrayQueue_enqueue(struct JDArrayQueue* q, void* value)
 
 	if (q->tail == q->array_length) q->tail = 0;
 	q->count++;
+
+	return JD_SUCCESS;
 }
 
-void JDArrayQueue_dequeue(struct JDArrayQueue* q, void* dest)
+int JDArrayQueue_dequeue(struct JDArrayQueue* q, void* dest)
 {
-	assert((q != NULL) && (q->elem != NULL));
-	if (!q->count) return;
+	if ((q == NULL) || (q->elem == NULL)) 	return JD_NULLPTR;
+	if (!q->count) 				return JD_EMPTY;
+	if (dest == NULL) 			return JD_NULLPTR_ARG;
 
 	void* first_position = (char*)q->elem + (q->elem_size * q->head);
 	memcpy(dest, first_position, q->elem_size);
@@ -104,36 +115,41 @@ void JDArrayQueue_dequeue(struct JDArrayQueue* q, void* dest)
 	q->count--;
 
 	if (q->head == q->array_length) q->head = 0;
+
+	return JD_SUCCESS;
 }
 
 int JDArrayQueue_empty(struct JDArrayQueue* q)
 {
-	assert(q != NULL);
-
-	if (q->count) return FALSE;
+	if (q == NULL) return TRUE;
+	if (q->count)  return FALSE;
 	return TRUE;
 }
 
 size_t JDArrayQueue_count(struct JDArrayQueue* q)
 {
-	assert(q != NULL);
-
+	if ((q == NULL) || (q->elem == NULL)) return JD_NULLPTR;
 	return q->count;
 }
 
-void JDArrayQueue_array(struct JDArrayQueue* q, void* dest)
+int JDArrayQueue_array(struct JDArrayQueue* q, void* dest)
 {
-	assert(q != NULL);
-	
-	copy_elements(dest, q);	
+	if ((q == NULL) || (q->elem == NULL)) return JD_NULLPTR;
+	if (dest == NULL) return JD_NULLPTR_ARG;
+
+	copy_elements(dest, q);
+
+	return JD_SUCCESS;
 }
 
-void JDArrayQueue_peek(struct JDArrayQueue* q, void* dest)
+int JDArrayQueue_peek(struct JDArrayQueue* q, void* dest)
 {
-	assert((q != NULL) && (q->elem != NULL));
-
-	if (!q->count) return;
+	if ((q == NULL) || (q->elem == NULL)) 	return JD_NULLPTR;
+	if (!q->count) 				return JD_EMPTY;
+	if (dest == NULL) 			return JD_NULLPTR_ARG;
 
 	void* first_position = (char*)q->elem + (q->elem_size * q->head);
 	memcpy(dest, first_position, q->elem_size);
+
+	return JD_SUCCESS;
 }
