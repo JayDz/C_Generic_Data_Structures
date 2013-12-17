@@ -20,21 +20,24 @@
 /* Will increase the size of array by nsize. */
 static void JDArrayStack_resize(struct JDArrayStack* s, size_t nsize);
 
-void JDArrayStack_init(struct JDArrayStack* s, size_t element_size, void(*destructor)(void*))
+int JDArrayStack_init(struct JDArrayStack* s, size_t element_size, void(*destructor)(void*))
 {
+	if (s == NULL) return JD_NULLPTR;
+
 	s->count = 0;
 	s->elem_size = element_size;
 	s->array_length = ARRAY_LENGTH;
 	s->dealloc_elements = destructor; // An example for where this is useful: an aggregate type with dynamic memory.
 	s->elem = malloc(ARRAY_LENGTH * element_size);
 	
-	assert(s->elem != NULL);
+	if (s->elem != NULL) return JD_SUCCESS;
+	return JD_FMALLOC;
 }
 
-void JDArrayStack_dealloc(struct JDArrayStack* s)
+int JDArrayStack_dealloc(struct JDArrayStack* s)
 {
-	assert((s != NULL) && (s->elem != NULL));
-	
+	if ((s == NULL) || (s->elem == NULL)) return JD_NULLPTR;
+
 	int i;	
 	if (s->dealloc_elements != NULL) {
 		for (i = 0; i < s->count; ++i) {
@@ -50,50 +53,58 @@ void JDArrayStack_dealloc(struct JDArrayStack* s)
 
 	free(s->elem);
 	s->elem = NULL;
+
+	return JD_SUCCESS;
 }
 
-void JDArrayStack_push(struct JDArrayStack* s, void* value)
+int JDArrayStack_push(struct JDArrayStack* s, void* value)
 {
-	assert((s != NULL) && (s->elem != NULL));
-	
+	if ((s == NULL) || (s->elem == NULL))	return JD_NULLPTR;
+	if (value == NULL) 			return JD_NULLPTR_ARG;
+
 	if (s->count == s->array_length) 
 		JDArrayStack_resize(s, s->array_length * 2);
 	
 	void* top = (char*)s->elem + (s->elem_size * s->count);
 	memcpy(top, value, s->elem_size);
 	s->count++;
+
+	return JD_SUCCESS;
 }
 
-void JDArrayStack_pop(struct JDArrayStack* s, void* target)
+int JDArrayStack_pop(struct JDArrayStack* s, void* target)
 {
-	assert((s != NULL) && (s->elem != NULL));
-	assert(s->count > 0);
+	if ((s == NULL) || (s->elem == NULL)) 	return JD_NULLPTR;
+	if (s->count < 0) 			return JD_EMPTY;
+	if (target == NULL) 			return JD_NULLPTR_ARG;
 
 	s->count--;
 	void* top = (char*)s->elem + (s->elem_size * s->count);
 	memcpy(target, top, s->elem_size);
+
+	return JD_SUCCESS;
 }
 
 int JDArrayStack_empty(struct JDArrayStack* s)
 {
-	assert((s != NULL) && (s->elem != NULL));
-
+	if ((s == NULL) || (s->elem == NULL)) return JD_NULLPTR;
+	
 	if (s->count > 0) return FALSE;
 	return TRUE;
 }
 
 size_t JDArrayStack_count(struct JDArrayStack* s)
 {
-	assert((s != NULL) && (s->elem != NULL));
+	if ((s == NULL) || (s->elem == NULL)) return JD_NULLPTR;
 	
 	return s->count;
 }
 
-void JDArrayStack_array(struct JDArrayStack* s, void* dest)
+int JDArrayStack_array(struct JDArrayStack* s, void* dest)
 {
-	assert((s != NULL) && (s->elem != NULL));
-
-	if (!s->count) return;
+	if ((s == NULL) || (s->elem == NULL))	return JD_NULLPTR;
+	if (!s->count) 				return JD_EMPTY;
+	if (dest == NULL) 			return JD_NULLPTR_ARG;
 
 	int i;
 	for (i = 0; i < s->count; ++i) {
@@ -101,17 +112,22 @@ void JDArrayStack_array(struct JDArrayStack* s, void* dest)
 		memcpy(dest, elem_addr, s->elem_size);
 		dest = (char*)dest + s->elem_size;
 	}
+
+	return JD_SUCCESS;
 }
 
-void JDArrayStack_peek(struct JDArrayStack* s, void* dest)
+int JDArrayStack_peek(struct JDArrayStack* s, void* dest)
 {
-	assert(s != NULL);
-	assert(s->count > 0);
+	if ((s == NULL) || (s->elem == NULL)) 	return JD_NULLPTR;
+	if (!s->count) 				return JD_EMPTY;
+	if (dest == NULL) 			return JD_NULLPTR_ARG;
 
 	if (s->count) {
 		void* elem_addr = (char*)s->elem + (s->elem_size * (s->count-1));
 		memcpy(dest, elem_addr, s->elem_size);
 	}
+
+	return JD_SUCCESS;
 }
 
 static void JDArrayStack_resize(struct JDArrayStack* s, size_t nsize)

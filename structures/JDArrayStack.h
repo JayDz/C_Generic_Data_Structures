@@ -17,24 +17,31 @@ struct JDArrayStack {
 	void(*dealloc_elements)(void*); /* A client provided destrutor for complex elements.       */
 };
 
+/* Error codes returned by JDArrayStack functions. */
+#define JD_FMALLOC 	0x00 		/* Call to malloc failed. 					*/
+#define JD_NULLPTR 	0x00		/* Pointer to JDArrayStack struct is NULL. 			*/
+#define JD_NULLPTR_ARG 	0x01		/* Argument to function where data is to be stored is NULL. 	*/
+#define JD_EMPTY	0x02		/* The stack contains no elements.				*/
+#define JD_SUCCESS 	0x03		/* No errors detected.						*/
+
 /*********************************************************************************/
 /* Function prototypes for the creation and destruction of a JDStack. */
 
 /* initialize a JDStack with an initial alloc size of 8 elements. */
 /* Can optionally pass a function pointer for deallocation of a more complex type*/
-void JDArrayStack_init(struct JDArrayStack* s, size_t element_size, void(*)(void*));
+int JDArrayStack_init(struct JDArrayStack* s, size_t element_size, void(*)(void*));
 
 /* destroy a JDStack. */
-void JDArrayStack_dealloc(struct JDArrayStack* s);
+int JDArrayStack_dealloc(struct JDArrayStack* s);
 
 /*********************************************************************************/
 /* Function prototypes for the usual operations we need to perform on a stack */
 
 /* push a value onto our stack. */
-void JDArrayStack_push(struct JDArrayStack* s, void* value);
+int JDArrayStack_push(struct JDArrayStack* s, void* value);
 
 /* pop a value from our stack and copy into a dest variable. */
-void JDArrayStack_pop(struct JDArrayStack* s, void* dest);
+int JDArrayStack_pop(struct JDArrayStack* s, void* dest);
 
 /* returns TRUE(1) if our stack is empty or FALSE(0) if it's not. */
 int JDArrayStack_empty(struct JDArrayStack* s);
@@ -43,9 +50,9 @@ int JDArrayStack_empty(struct JDArrayStack* s);
 size_t JDArrayStack_count(struct JDArrayStack* s);
 
 /* stores values in stack into an array dest. dest should point to block large enough for all stack values */
-void JDArrayStack_array(struct JDArrayStack* s, void* dest);
+int JDArrayStack_array(struct JDArrayStack* s, void* dest);
 
 /* return value at the top of stack, without removing it. */
-void JDArrayStack_peek(struct JDArrayStack* s, void* dest);
+int JDArrayStack_peek(struct JDArrayStack* s, void* dest);
 
 #endif
