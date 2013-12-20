@@ -1,13 +1,13 @@
 /*
  * An implementation of a generic singly linked list.
- * 12/17/13
+ * 12/20/13
  */
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include "JDForwardList.h"
-#include <stdio.h>
+
 static int make_node(struct JDNode** n, void* value, size_t elem_size)
 {
 	*n = malloc(sizeof(struct JDNode));

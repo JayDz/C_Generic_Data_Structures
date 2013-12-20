@@ -1,6 +1,6 @@
 /*
 * An implementation of a generic singly linked list.
-* 12/17/13
+* 12/20/13
 */
 
 #ifndef JDFORWARDLIST_H
