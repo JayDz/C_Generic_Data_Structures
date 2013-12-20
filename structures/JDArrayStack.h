@@ -8,6 +8,7 @@
 #define JDARRAYSTACK_H
 
 #include <stddef.h>
+#include "JDError_codes.h"
 
 struct JDArrayStack {
 	size_t array_length;            /* Keep a count of our array length for resizing purposes. */
@@ -16,13 +17,6 @@ struct JDArrayStack {
 	void*  elem;                    /* A pointer to our dynamically allocated array.           */
 	void(*dealloc_elements)(void*); /* A client provided destrutor for complex elements.       */
 };
-
-/* Error codes returned by JDArrayStack functions. */
-#define JD_FMALLOC 	0x00 		/* Call to malloc failed. 					*/
-#define JD_NULLPTR 	0x00		/* Pointer to JDArrayStack struct is NULL. 			*/
-#define JD_NULLPTR_ARG 	0x01		/* Argument to function where data is to be stored is NULL. 	*/
-#define JD_EMPTY	0x02		/* The stack contains no elements.				*/
-#define JD_SUCCESS 	0x03		/* No errors detected.						*/
 
 /*********************************************************************************/
 /* Function prototypes for the creation and destruction of a JDStack. */
