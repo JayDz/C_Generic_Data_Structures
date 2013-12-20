@@ -8,6 +8,7 @@
 #define JDARRAYQUEUE_H
 
 #include <stddef.h>
+#include "JDError_codes.h"
 
 struct JDArrayQueue {
 	size_t array_length;			/* Keep count of allocated space. */
@@ -18,13 +19,6 @@ struct JDArrayQueue {
 	int    head;				/* Index of the head of Queue     */
 	int    tail;				/* Index to the end of the Queue  */
 };
-
-/* Error codes */
-#define JD_FMALLOC	0x00	/* Call to malloc failed. 			*/
-#define JD_NULLPTR	0x00	/* Pointer to JDArrayQueue struct is NULL 	*/
-#define JD_NULLPTR_ARG	0x01	/* Argument to function is NULL 		*/
-#define JD_EMPTY	0x02	/* Queue is empty				*/
-#define JD_SUCCESS	0x03	/* No errors detected				*/
 
 /**********************************************************************************/
 /* Function Prototypes */
