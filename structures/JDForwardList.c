@@ -23,7 +23,7 @@ static int make_node(struct JDNode** n, void* value, size_t elem_size)
 	return JD_SUCCESS;
 }
 
-int JDList_init(struct JDList* list, size_t elem_size, void(*dtor)(void*))
+int JDForwardList_init(struct JDForwardList* list, size_t elem_size, void(*dtor)(void*))
 {
 	if (list == NULL) return JD_NULLPTR;
 
@@ -36,7 +36,7 @@ int JDList_init(struct JDList* list, size_t elem_size, void(*dtor)(void*))
 	return JD_SUCCESS;
 }
 
-int JDList_dealloc(struct JDList* list)
+int JDForwardList_dealloc(struct JDForwardList* list)
 {
 	
 	if (list == NULL) return JD_NULLPTR;
@@ -60,7 +60,7 @@ int JDList_dealloc(struct JDList* list)
 	return JD_SUCCESS;
 }
 
-int JDList_prepend(struct JDList* list, void* value)
+int JDForwardList_prepend(struct JDForwardList* list, void* value)
 {
 	if (list == NULL)  return JD_NULLPTR;
 	if (value == NULL) return JD_NULLPTR_ARG;
@@ -83,7 +83,7 @@ int JDList_prepend(struct JDList* list, void* value)
 	return JD_SUCCESS;
 }
 
-int JDList_append(struct JDList* list, void* value)
+int JDForwardList_append(struct JDForwardList* list, void* value)
 {
 	if (list == NULL)  return JD_NULLPTR;
 	if (value == NULL) return JD_NULLPTR_ARG;
@@ -105,7 +105,7 @@ int JDList_append(struct JDList* list, void* value)
 	return JD_SUCCESS;
 }
 
-int JDList_remove(struct JDList* list, void* dest)
+int JDForwardList_remove(struct JDForwardList* list, void* dest)
 {
 	if (list == NULL)   return JD_NULLPTR;
 	if (dest == NULL)   return JD_NULLPTR_ARG;
@@ -123,7 +123,7 @@ int JDList_remove(struct JDList* list, void* dest)
 	return JD_SUCCESS;
 }
 
-int JDList_empty(struct JDList* list)
+int JDForwardList_empty(struct JDForwardList* list)
 {
 	if (list == NULL) return TRUE;
 	if (list->count)
@@ -131,13 +131,13 @@ int JDList_empty(struct JDList* list)
 	return TRUE;
 }
 
-int JDList_count(struct JDList* list)
+int JDForwardList_count(struct JDForwardList* list)
 {
 	if (list == NULL) return JD_NULLPTR;
 	return list->count;
 }
 
-int JDList_array(struct JDList* list, void* dest)
+int JDForwardList_array(struct JDForwardList* list, void* dest)
 {
 	if (list == NULL)   return JD_NULLPTR;
 	if (dest == NULL)   return JD_NULLPTR_ARG;
@@ -154,7 +154,7 @@ int JDList_array(struct JDList* list, void* dest)
 	return JD_SUCCESS;
 }
 
-int JDList_front(struct JDList* list, void* dest)
+int JDForwardList_front(struct JDForwardList* list, void* dest)
 {
 	if (list == NULL)   return JD_NULLPTR;
 	if (dest == NULL)   return JD_NULLPTR_ARG;
@@ -165,7 +165,7 @@ int JDList_front(struct JDList* list, void* dest)
 	return JD_SUCCESS;
 }
 
-int JDList_back(struct JDList* list, void* dest)
+int JDForwardList_back(struct JDForwardList* list, void* dest)
 {
 	if (list == NULL)   return JD_NULLPTR;
 	if (dest == NULL)   return JD_NULLPTR_ARG;
@@ -176,7 +176,7 @@ int JDList_back(struct JDList* list, void* dest)
 	return JD_SUCCESS;
 }
 
-int JDList_remove_if(struct JDList* list, int(*predicate)(void*))
+int JDForwardList_remove_if(struct JDForwardList* list, int(*predicate)(void*))
 {
 	if (list == NULL) return JD_NULLPTR;
 	if (predicate == NULL) return JD_NULLPTR_ARG;
