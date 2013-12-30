@@ -58,4 +58,7 @@ int JDForwardList_back(struct JDForwardList* list, void* dest);
 /* Removes all nodes satisfying the predicate. Returns non-zero for true. */
 int JDForwardList_remove_if(struct JDForwardList* list, int(*predicate)(void*));
 
+/* Returns true if key is in list, otherwise false. */
+int JDForwardList_contains(struct JDForwardList* list, void* key, int(*cmp)(void*,void*));
+
 #endif

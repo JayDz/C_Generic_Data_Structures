@@ -223,3 +223,22 @@ int JDForwardList_remove_if(struct JDForwardList* list, int(*predicate)(void*))
 
 	return JD_SUCCESS;
 }
+
+int JDForwardList_contains(struct JDForwardList* list, void* key, int(*cmp)(void*,void*))
+{
+	if (list == NULL) 	return FALSE;
+	if (key == NULL)	return FALSE;
+	if (!(list->count))	return FALSE;
+
+	int i;
+	struct JDNode* curr = list->head;
+	for (i = 0; i < list->count; ++i) {
+		if (cmp) {
+			if (!cmp(curr->value, key)) return TRUE;
+		} else {
+			if (!memcmp(curr->value, key, list->elem_size)) return TRUE;
+		}
+	}
+
+	return FALSE;
+}
