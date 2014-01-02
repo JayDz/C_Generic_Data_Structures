@@ -63,4 +63,16 @@ int JDList_empty(struct JDList* list);
 /* Returns true if key is found in list. */
 int JDList_contains(struct JDList* list, void* key, int(*cmp)(void*,void*));
 
+/* Inserts a value after the value key in list. */
+int JDList_insert_after(struct JDList* list, void* key, void* value, int(*cmp)(void*,void*));
+
+/* Removes a value after the value key in list. */
+int JDList_remove_after(struct JDList* list, void* key, int(*cmp)(void*,void*));
+
+/* Inserts a value before the value key in list. */
+int JDList_insert_before(struct JDList* list, void* key, void* value, int(*cmp)(void*,void*));
+
+/* Removes a value before the value key in list. */
+int JDList_remove_before(struct JDList* list, void* key, int(*cmp)(void*,void*));
+
 #endif
