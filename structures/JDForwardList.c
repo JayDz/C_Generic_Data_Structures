@@ -257,7 +257,7 @@ int JDForwardList_insert_after(struct JDForwardList* list, void* key, void* valu
 			if (i == 0) {
 				return JDForwardList_append(list, value);
 			} else if (i == (list->count - 1)) {
-				JDNode* n;
+				struct JDNode* n;
 				int ret = make_node(&n, value, list->elem_size);
 				if (ret == JD_FMALLOC) return ret;
 
@@ -266,7 +266,7 @@ int JDForwardList_insert_after(struct JDForwardList* list, void* key, void* valu
 				list->count++;
 				return JD_SUCCESS;
 			} else {
-				JDNode* n;
+				struct JDNode* n;
 				int ret = make_node(&n, value, list->elem_size);
 				if (ret == JD_FMALLOC) return ret;
 				n->next = curr->next;
@@ -286,7 +286,7 @@ int JDForwardList_remove_after(struct JDForwardList* list, void* key, int(*cmp)(
 	if (key == NULL)	return JD_NULLPTR_ARG;
 	if (cmp == NULL)	return JD_NULLPTR_ARG;
 
-	JDNode* curr = list->head;
+	struct JDNode* curr = list->head;
 	int i;
 	for (i = 0; i < list->count; ++i) {
 		if (!cmp(curr->value, key)) {
@@ -303,7 +303,7 @@ int JDForwardList_remove_after(struct JDForwardList* list, void* key, int(*cmp)(
 				list->count--;
 				return JD_SUCCESS;
 			} else {
-				JDNode* tmp = curr->next;
+				struct JDNode* tmp = curr->next;
 				curr->next = tmp->next;
 				if (list->dtor)
 					list->dtor(tmp->value);
