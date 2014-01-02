@@ -61,4 +61,10 @@ int JDForwardList_remove_if(struct JDForwardList* list, int(*predicate)(void*));
 /* Returns true if key is in list, otherwise false. */
 int JDForwardList_contains(struct JDForwardList* list, void* key, int(*cmp)(void*,void*));
 
+/* Inserts value after the key value in list. */
+int JDForwardList_insert_after(struct JDForwardList* list, void* key, void* value, int(*cmp)(void*,void*));
+
+/* Removes value after the key value in list. */
+int JDForwardList_remove_after(struct JDForwardList* list, void* key, int(*cmp)(void*,void*));
+
 #endif

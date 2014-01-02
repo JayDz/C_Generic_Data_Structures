@@ -242,3 +242,78 @@ int JDForwardList_contains(struct JDForwardList* list, void* key, int(*cmp)(void
 
 	return FALSE;
 }
+
+int JDForwardList_insert_after(struct JDForwardList* list, void* key, void* value, int(*cmp)(void*,void*))
+{
+	if (list == NULL) 	return JD_NULLPTR;
+	if (key == NULL) 	return JD_NULLPTR_ARG;
+	if (value == NULL) 	return JD_NULLPTR_ARG;
+	if (cmp == NULL)	return JD_NULLPTR_ARG;
+
+	struct JDNode* curr = list->head;
+	int i;
+	for (i = 0; i < list->count; ++i) {
+		if (!cmp(curr->value, key)) {
+			if (i == 0) {
+				return JDForwardList_append(list, value);
+			} else if (i == (list->count - 1)) {
+				JDNode* n;
+				int ret = make_node(&n, value, list->elem_size);
+				if (ret == JD_FMALLOC) return ret;
+
+				curr->next = n;
+				list->tail = n;
+				list->count++;
+				return JD_SUCCESS;
+			} else {
+				JDNode* n;
+				int ret = make_node(&n, value, list->elem_size);
+				if (ret == JD_FMALLOC) return ret;
+				n->next = curr->next;
+				curr->next = n;
+				list->count++;
+				return JD_SUCCESS;
+			}
+		}
+		curr = curr->next;
+	}
+	return JD_NOTFOUND;
+}
+
+int JDForwardList_remove_after(struct JDForwardList* list, void* key, int(*cmp)(void*,void*))
+{
+	if (list == NULL)	return JD_NULLPTR;
+	if (key == NULL)	return JD_NULLPTR_ARG;
+	if (cmp == NULL)	return JD_NULLPTR_ARG;
+
+	JDNode* curr = list->head;
+	int i;
+	for (i = 0; i < list->count; ++i) {
+		if (!cmp(curr->value, key)) {
+			if (list->head == list->tail) {
+				return JD_SUCCESS;
+			} else if (curr == list->tail) {
+				return JD_SUCCESS;
+			} else if (i == (list->count - 2)) {
+				if (list->dtor) 
+					list->dtor(list->tail->value);
+				free(list->tail->value);
+				free(list->tail);
+				list->tail = curr;
+				list->count--;
+				return JD_SUCCESS;
+			} else {
+				JDNode* tmp = curr->next;
+				curr->next = tmp->next;
+				if (list->dtor)
+					list->dtor(tmp->value);
+				free(tmp->value);
+				free(tmp);
+				list->count--;
+				return JD_SUCCESS;
+			}
+		}
+		curr = curr->next;
+	}
+	return JD_NOTFOUND;
+}
