@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JDQueue.h</title>
+<style type="text/css">
+.header {	font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+}
+.prototypes {	font-family:"Courier New", Courier, monospace;
+}
+</style>
+</head>
+
+<body>
+<p class="header"><strong>JDQueue</strong></p>
+<p><a href="#JDQueue_init">JDQueue_init</a></p>
+<p><a href="#JDQueue_dealloc">JDQueue_dealloc</a></p>
+<p><a href="#JDQueue_enqueue">JDQueue_enqueue</a></p>
+<p><a href="#JDQueue_dequeue">JDQueue_dequeue</a></p>
+<p><a href="#JDQueue_empty">JDQueue_empty</a></p>
+<p><a href="#JDQueue_count">JDQueue_count</a></p>
+<p><a href="#JDQueue_array">JDQueue_array</a></p>
+<p><a href="#JDQueue_peek">JDQueue_peek</a></p>
+<hr>
+<p class="header">&nbsp;</p><a id="JDQueue_init">
+<p><span class="header">Function: </span>Prepares a JDQueue for operation. MUST call JDQueue_dealloc when you're done with your work or memory will be leaked.</p>
+<blockquote>
+  <p class="prototypes">int JDQueue_init(struct JDQueue* queue, size_t element_size, void(*dtor)(void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">size_t element_size</span>:</td>
+      <td>The size of the type we intend to store into queue.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void(*dtor)(void*)</span>: </td>
+      <td>A pointer to a function which will behave like a destructor for the values stored inside our queue. If we don't need a destructor, pass NULL as its value.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_NULLPTR: Returned if queue parameter is NULL.</p>
+  <p>JD_FMALLOC: Returned if the allocation of dynamic memory failed. </p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	// do work here.
+    
+	JDQueue_dealloc(&queue);
+    
+	return 0;
+}   
+</pre>
+</a>
+<hr><a id="JDQueue_dealloc">
+<p><span class="header">Function: </span>Destroys a queue by freeing all elements remaining. If a destructor was passed to JDQueue_init it will be called for each element. </p>
+<blockquote>
+  <p class="prototypes">int JDQueue_dealloc(struct JDQueue* queue);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_NULLPTR: Returned if queue parameter is NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store struct Foo's, need a custom destructor since struct Foo contains dynamic memory. */
+
+struct Foo {
+	int* ptr;
+};
+
+void dtor(void* elem)
+{
+	struct Foo* tmp = (struct Foo*)elem;
+	free(tmp->ptr);
+}
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(struct Foo), &dtor);
+    
+	// do work here.
+    
+	JDQueue_dealloc(&queue);
+    
+	return 0;
+}   
+</pre>
+</a>
+<hr><a id="JDQueue_enqueue">
+<p><span class="header">Function: </span>Adds an element to the back of the queue.</p>
+<blockquote>
+  <p class="prototypes">int JDQueue_enqueue(struct JDQueue* queue, void* value);</p>
+
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* value</span></td>
+      <td>A pointer to the address containing the value we wish to push onto the end of the queue.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_NULLPTR: Returned if queue parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if value points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	int value = 10;
+	JDQueue_enqueue(&queue, &value);
+    
+	JDQueue_dealloc(&queue);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDQueue_dequeue">
+<p><span class="header">Function: </span>Removes the first element in queue, and stores it in dest.</p>
+<blockquote>
+  <p class="prototypes">int JDQueue_dequeue(struct JDQueue* queue, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* dest</span></td>
+      <td>A pointer to the address where we're to copy the element into.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_EMPTY: Queue is empty.</p>
+  <p>JD_NULLPTR: Returned if queue parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	int value = 10;
+	int dest = 0;
+	JDQueue_enqueue(&queue, &value);
+    
+	JDQueue_dequeue(&queue, &dest);
+    
+	JDQueue_dealloc(&queue);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDQueue_empty">
+<p><span class="header">Function: </span>Returns TRUE(1) if queue is empty. Otherwise, returns FALSE(0).</p>
+<blockquote>
+  <p class="prototypes">int JDQueue_empty(struct JDQueue* queue);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>TRUE: Queue is empty.</p>
+  <p>FALSE: Queue is not empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	int value = 10;
+	int empty = TRUE;
+	JDQueue_enqueue(&queue, &value);
+	empty = JDQueue_empty(&queue);
+    
+	JDQueue_dealloc(&queue);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDQueue_count">
+<p><span class="header">Function: </span>Returns the number of elements currently on the queue.</p>
+<blockquote>
+  <p class="prototypes">size_t JDQueue_count(struct JDQueue* queue);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>Number of elements in queue.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	int value = 10;
+	JDQueue_enqueue(&queue, &value);
+	value = 20;
+	JDQueue_enqueue(&queue, &value);
+    
+	printf("Size of queue is: %d\n", JDQueue_count(&queue));
+    
+	JDQueue_dealloc(&queue);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDQueue_array">
+<p><span class="header">Function: </span>Stores values in queue into an array dest. dest should point to block large enough for all queue values. <strong><u>WARNING</u></strong>: Queue retains ownership of elements and will free all values after a call to dealloc. </p>
+<blockquote>
+  <p class="prototypes">int JDQueue_array(struct JDQueue* queue, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* dest</span></td>
+      <td>A pointer to the address of an array large enough to fit all elements in queue.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_EMPTY: Queue is empty.</p>
+  <p>JD_NULLPTR: Returned if queue parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	int i;
+	for (i = 0; i < 5000; ++i)
+		JDQueue_enqueue(&queue, &i);
+    
+	int* arr = malloc(sizeof(int) * JDQueue_count(&queue));
+	JDQueue_array(&queue, arr);
+    
+	free(arr); 
+	JDQueue_dealloc(&queue);
+   
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDQueue_peek">
+<p><span class="header">Function: </span>Stores the element at the front of the queue into dest, but does not remove it from queue.</p>
+<blockquote>
+  <p class="prototypes">int JDQueue_peek(struct JDQueue* queue, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDQueue* queue</span>:</td>
+      <td width="971">A pointer to a struct of type JDQueue.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* dest</span></td>
+      <td>A pointer to the address where we're to copy the element at the front of queue.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_EMPTY: Queue is empty.</p>
+  <p>JD_NULLPTR: Returned if queue parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDQueue.h"
+
+/* Create a queue to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDQueue queue;
+	JDQueue_init(&queue, sizeof(int), NULL);
+    
+	int value = 10;
+	JDQueue_enqueue(&queue, &value);
+    
+	int first;
+	JDQueue_peek(&queue, &first);
+	
+	JDQueue_dealloc(&queue);
+   
+	return 0;
+}  </pre></a>
+</body>
+</html>

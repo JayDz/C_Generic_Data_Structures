@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JDSearch.h</title>
+<style type="text/css">
+.header {font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+}
+.prototypes {font-family:"Courier New", Courier, monospace;
+}
+</style>
+</head>
+
+<body>
+<p class="header"><strong>JDSearch</strong></p>
+<p><a href="#jd_lsearch">jd_lsearch</a></p>
+<p><a href="#jd_bsearch">jd_bsearch</a></p>
+<hr>
+<p class="header">&nbsp;</p>
+<a id="jd_lsearch">
+<p><span class="header">Function: </span>Performs a linear search on base. If key is found, the return value equals its index. Otherwise, the return value is -1.</p>
+<blockquote>
+  <p class="prototypes">int jd_lsearch(void* base, void* key, size_t elem_size, size_t length, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">void* base</span>:</td>
+      <td width="971">A pointer to an array.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* key</span>:</td>
+      <td>A pointer to the key we're to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">size_t elem_size:</td>
+      <td>The size of the elements stored in array.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">size_t length</td>
+      <td>The length of array.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">int(*cmp)(void*,void*)</span>: </td>
+      <td>A pointer to a function receiving two elements to compare. Return zero to indicate elements are equal. If NULL, memory blocks are compared.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>The index of key or -1 if not found.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDSearch.h"
+
+/* Create an array and search for a key. */
+#define SIZE 7
+
+int cmp(void* a, void* b)
+{
+	return *((int*)a) - *((int*)b);
+}
+
+int main(void)
+{
+	int arr[SIZE] = {10,20,30,40,50,60,70};
+	int key = 50;
+	int key_index = -1;
+	key_index = jd_lsearch(arr, &key, sizeof(int), SIZE, &cmp);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr><a id="jd_bsearch">
+<p><span class="header">Function: </span>Performs a binary search on base. If key is found, the return value equals its index. Otherwise, the return value is -1. Assumes base points to a sorted collection.</p>
+<blockquote>
+  <p class="prototypes">int jd_bsearch(void* base, void* key, size_t elem_size, size_t length, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290" class="prototypes">void* base:</td>
+      <td width="971">A pointer to an array.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* key:</td>
+      <td>A pointer to the key we're to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">size_t elem_size</td>
+      <td>The size of the elements stored in array.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">size_t length</td>
+      <td>The length of array.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">int(*cmp)(void*,void*)</span>:</td>
+      <td>A pointer to a function receiving two elements to compare. Return zero to indicate elements are equal. If NULL, memory blocks are compared.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>The index of key or -1 if not found.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre>
+#include "JDSearch.h"
+
+/* Create an array and search for a key. */
+#define SIZE 7
+
+int cmp(void* a, void* b)
+{
+	return *((int*)a) - *((int*)b);
+}
+
+int main(void)
+{
+	int arr[SIZE] = {10,20,30,40,50,60,70};
+	int key = 50;
+	int key_index = -1;
+	key_index = jd_bsearch(arr, &key, sizeof(int), SIZE, &cmp);
+    
+	return 0;
+}
+</pre></a>
+</body>
+</html>

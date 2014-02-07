@@ -1,0 +1,940 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JDList.h</title>
+<style type="text/css">
+.header {	font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+}
+.prototypes {	font-family:"Courier New", Courier, monospace;
+}
+</style>
+</head>
+
+<body>
+<p class="header"><strong>JDList</strong></p>
+<p><a href="#JDList_init">JDList_init</a></p>
+<p><a href="#JDList_dealloc">JDList_dealloc</a></p>
+<p><a href="#JDList_prepend">JDList_prepend</a></p>
+<p><a href="#JDList_append">JDList_append</a></p>
+<p><a href="#JDList_remove">JDList_remove</a></p>
+<p><a href="#JDList_remove_back">JDList_remove_back</a></p>
+<p><a href="#JDList_remove_if">JDList_remove_if</a></p>
+<p><a href="#JDList_empty">JDList_empty</a></p>
+<p><a href="#JDList_count">JDList_count</a></p>
+<p><a href="#JDList_array">JDList_array</a></p>
+<p><a href="#JDList_front">JDList_front</a></p>
+<p><a href="#JDList_back">JDList_back</a></p>
+<p><a href="#JDList_contains">JDList_contains</a></p>
+<p><a href="#JDList_insert_after">JDList_insert_after</a></p>
+<p><a href="#JDList_remove_after">JDList_remove_after</a></p>
+<p><a href="#JDList_insert_before">JDList_insert_before</a></p>
+<p><a href="#JDList_remove_before">JDList_remove_before</a></p>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_init">
+<p><span class="header">Function: </span>Prepares a JDList for operations. MUST call JDList_dealloc when you're done with your work or memory will be leaked.</p>
+<blockquote>
+  <p class="prototypes">int JDList_init(struct JDList* list, size_t element_size, void(*dtor)(void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">size_t element_size</span>:</td>
+      <td>The size of the type we intend to store into nodes. </td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void(*dtor)(void*)</span>: </td>
+      <td>A pointer to a function which will behave like a destructor for the values stored inside our list. If we don't need a destructor, pass NULL as its value.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no erros detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	// do work here.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_dealloc">
+<p><span class="header">Function: </span>Destroys a JDList. If a pointer to a destructor function was passed to JDList_init, it will be called for each node in list. </p>
+<blockquote>
+  <p class="prototypes">int JDList_dealloc(struct JDList* list);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	// do work here.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_prepend">
+<p><span class="header">Function: </span>Adds an item to the front of the list. </p>
+<blockquote>
+  <p class="prototypes">int JDList_prepend(struct JDList* list, void* item);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* item: </td>
+      <td>A pointer to an item to add to list.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if item points to NULL.</p>
+  <p>JD_FMALLOC: Returned if we failed to allocate heap memory for a new node.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_append">
+<p><span class="header">Function: </span>Adds an item to the back of the list. </p>
+<blockquote>
+  <p class="prototypes">int JDList_append(struct JDList* list, void* item);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* item</span>: </td>
+      <td>A pointer to an item to add to list.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if item points to NULL.</p>
+  <p>JD_FMALLOC: Returned if we failed to allocate heap memory for a new node.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 30;
+	JDList_append(&list, &val);
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_remove">
+<p><span class="header">Function: </span>Removes the item at front of list. Stores removed value into item.</p>
+<blockquote>
+  <p class="prototypes">int JDList_remove(struct JDList* list, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* item: </td>
+      <td>A pointer to location where we're to store removed item.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+  <p>JD_EMPTY: Returned if list is empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	JDList_remove(&list, &val);
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_remove_back">
+<p><span class="header">Function: </span>Removes the item at end of list. Stores removed value into item.</p>
+<blockquote>
+  <p class="prototypes">int JDList_remove_back(struct JDList* list, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* item: </td>
+      <td>A pointer to location where we're to store removed item.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+  <p>JD_EMPTY: Returned if list is empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	JDList_remove_back(&list, &val);
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_remove_if">
+<p><span class="header">Function: </span>Removes all items from list who satisfy the predicate.</p>
+<blockquote>
+  <p class="prototypes">int JDList_remove_if(struct JDList* list, int(*predicate)(void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">int(*predicate)(void*)</td>
+      <td>A pointer to a function which behaves as a predicate. Return non-zero if condition matches, otherwise return zero.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+/* Create a predicate to compare all values in list with a specified condition. */
+int pred(void* elem)
+{
+	if (*((int*)elem) > 10) return TRUE;
+	return FALSE;
+}
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	JDList_remove_if(&list, &pred); // The list is now empty.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_empty">
+<p><span class="header">Function: </span>Returns true if list is empty. Otherwise, false.</p>
+<blockquote>
+  <p class="prototypes">int JDList_empty(struct JDList* list);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>TRUE: Returned if list is empty.</p>
+  <p>FALSE: Returned if list is not empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	JDdList_remove(&list, &val);
+	printf("Empty? %d\n", JDList_empty(&list)); // List is empty, returns TRUE (non-zero).
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_count">
+<p><span class="header">Function: </span>Returns the number of items in list, or JD_NULLPTR if list points to NULL.</p>
+<blockquote>
+  <p class="prototypes">int JDList_count(struct JDList* list);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_NULLPTR: Returned if list is null.</p>
+  <p>the number of items in list.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	JDList_remove(&list, &val);
+	printf("Count? %d\n", JDList_count(&list)); // List is empty, returns zero.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_array">
+<p><span class="header">Function: </span>Stores all values in list into a client provided array. WARNING: list maintains ownership of elements.</p>
+<blockquote>
+  <p class="prototypes">int JDList_array(struct JDList* list, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* dest:</td>
+      <td>A pointer to an array large enough to hold all items in list.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+  <p>JD_EMPTY: Returned if list is empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	int i;
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+	
+	for (i = 0; i < 1000; ++i) JDList_append(&list, &i);
+    
+	int* arr = malloc(sizeof(int) * JDList_count(&list));
+	JDList_array(&list, arr);
+    
+	JDList_dealloc(&list); // list maintains ownership of items, therefore arr will be corrupted by a call to dealloc if list maintains an aggregate type.
+	free(arr);
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_front">
+<p><span class="header">Function: </span>Stores the front item of list into dest.</p>
+<blockquote>
+  <p class="prototypes">int JDList_front(struct JDList* list, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* dest</td>
+      <td>A pointer to location where we're to store the head item of list.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+  <p>JD_EMPTY: Returned if list is empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+	JDList_prepend(&list, &val);
+	val = 50;
+	JDList_append(&list, &val);
+    
+	JDList_front(&list, &val); // val contains the value 40. Does not remove.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_back">
+<p><span class="header">Function: </span>Stores the last item of list into dest.</p>
+<blockquote>
+  <p class="prototypes">int JDList_back(struct JDList* list, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* dest</td>
+      <td>A pointer to location where we're to store the tail item of list.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+  <p>JD_EMPTY: Returned if list is empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+    JDList_prepend(&list, &val);
+	val = 50;
+	JDList_append(&list, &val);
+    
+	JDList_back(&list, &val); // val contains the value 50. Does not remove.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_contains">
+<p><span class="header">Function: </span>Returns true if list contains a given value (key).Otherwise false.</p>
+<blockquote>
+  <p class="prototypes">int JDList_contains(struct JDList* list, void* key, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* key</td>
+      <td>A pointer to a value to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">int(*cmp)(void*,void*)</td>
+      <td>Pointer to function which compares a value in list with a given key. Returns zero if match, or non-zero if not a match.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>TRUE: Value was found in list.</p>
+  <p>FALSE: Value not found in list.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+/* The first argument is always the value of the current node being tested. Second argument is the given key to the contains function. */
+int cmp(void* list_value, void* key)
+{
+	int* value = (int*)list_value;
+	int* key   = (int*)key;
+    
+	return *value - *key; // if equal return value will be zero. Which indicates the values are equal. 
+}
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+    
+	int key = 40;
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+	JDList_prepend(&list, &val);
+	val = 50;
+	JDdList_append(&list, &val);
+    
+	printf("Found value %d?\n", JDList_contains(&list, &key, &cmp)); // prints non-zero for true.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_insert_after">
+<p><span class="header">Function: </span>Inserts a value after a given key (which represents a current value in list).</p>
+<blockquote>
+  <p class="prototypes">int JDList_insert_after(struct JDList* list, void* key, void* value, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* key</td>
+      <td>A pointer to the key which will be the value to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* value</td>
+      <td>A pointer to the value to be inserted into list after the key value.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">int(*cmp)(void*,void*)</td>
+      <td>A pointer to function which will decide if key matches the current node value being evaluated. Returns zero if equal, otherwise non-zero.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_FMALLOC: We failed to allocate dynamic memory.</p>
+  <p>JD_NULLPTR_ARG: Returned if key, value or cmp arguments point to NULL.</p>
+  <p>JD_NOTFOUND: Returned if the given key is not found in list.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+/* The first argument is always the value of the current node being tested. Second argument is the given key to the contains function. */
+int cmp(void* list_value, void* key)
+{
+	int* value = (int*)list_value;
+	int* key   = (int*)key;
+    
+	return *value - *key; // if equal return value will be zero. Which indicates the values are equal. 
+}
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+	
+	int key;
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+	JDList_prepend(&list, &val);
+	val = 50;
+	JDList_append(&list, &val);
+    
+	val = 100;
+	key = 40;
+	JDList_insert_after(&list, &key, &val, &cmp); // the list should now contain: 40,100,20,50
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_remove_after">
+<p><span class="header">Function: </span>Removes a value after a given key (which represents a current value in list).</p>
+<blockquote>
+  <p class="prototypes">int JDList_remove_after(struct JDList* list, void* key, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* key</td>
+      <td>A pointer to the key which will be the value to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">int(*cmp)(void*,void*)</td>
+      <td>A pointer to function which will decide if key matches the current node value being evaluated. Returns zero if equal, otherwise non-zero.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if key, value or cmp arguments point to NULL.</p>
+  <p>JD_NOTFOUND: Returned if the given key is not found in list.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+/* The first argument is always the value of the current node being tested. Second argument is the given key to the contains function. */
+int cmp(void* list_value, void* key)
+{
+	int* value = (int*)list_value;
+	int* key   = (int*)key;
+    
+	return *value - *key; // if equal return value will be zero. Which indicates the values are equal. 
+}
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+	
+	int key;
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+	JDList_prepend(&list, &val);
+	val = 50;
+	JDList_append(&list, &val);
+    
+	key = 40;
+	JDList_remove_after(&list, &key, &cmp); // the list should now contain: 40,50
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_insert_before">
+<p><span class="header">Function: </span>Inserts a value before a given key (which represents a current value in list).</p>
+<blockquote>
+  <p class="prototypes">int JDList_insert_before(struct JDList* list, void* key, void* value, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* key</td>
+      <td>A pointer to the key which will be the value to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* value</td>
+      <td>A pointer to the value to be inserted into list before the key value.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">int(*cmp)(void*,void*)</td>
+      <td>A pointer to function which will decide if key matches the current node value being evaluated. Returns zero if equal, otherwise non-zero.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_FMALLOC: We failed to allocate dynamic memory.</p>
+  <p>JD_NULLPTR_ARG: Returned if key, value or cmp arguments point to NULL.</p>
+  <p>JD_NOTFOUND: Returned if the given key is not found in list.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+/* The first argument is always the value of the current node being tested. Second argument is the given key to the contains function. */
+int cmp(void* list_value, void* key)
+{
+	int* value = (int*)list_value;
+	int* key   = (int*)key;
+    
+	return *value - *key; // if equal return value will be zero. Which indicates the values are equal. 
+}
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+	
+	int key;
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+	JDList_prepend(&list, &val);
+	val = 50;
+	JDList_append(&list, &val);
+    
+	val = 100;
+	key = 40;
+	JDList_insert_before(&list, &key, &val, &cmp); // the list should now contain: 100,40,20,50
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>
+<hr>
+<p class="header">&nbsp;</p><a id="JDList_remove_before">
+<p><span class="header">Function: </span>Removes a value before a given key (which represents a current value in list).</p>
+<blockquote>
+  <p class="prototypes">int JDList_remove_before(struct JDList* list, void* key, int(*cmp)(void*,void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDList* list</span>:</td>
+      <td width="971">A pointer to a struct of type JDList.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">void* key</td>
+      <td>A pointer to the key which will be the value to search for.</td>
+    </tr>
+    <tr>
+      <td class="prototypes">int(*cmp)(void*,void*)</td>
+      <td>A pointer to function which will decide if key matches the current node value being evaluated. Returns zero if equal, otherwise non-zero.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if no errors detected.</p>
+  <p>JD_NULLPTR: Returned if list parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if key, value or cmp arguments point to NULL.</p>
+  <p>JD_NOTFOUND: Returned if the given key is not found in list.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDList.h"
+
+/* Create a JDList to store ints, no need for a custom destructor since int is a primative type. */
+
+/* The first argument is always the value of the current node being tested. Second argument is the given key to the contains function. */
+int cmp(void* list_value, void* key)
+{
+	int* value = (int*)list_value;
+	int* key   = (int*)key;
+    
+	return *value - *key; // if equal return value will be zero. Which indicates the values are equal. 
+}
+
+int main(void)
+{
+	struct JDList list;
+	JDList_init(&list, sizeof(int), NULL);
+	
+	int key;
+	int val = 20;
+	JDList_prepend(&list, &val);
+	val = 40;
+	JDList_prepend(&list, &val);
+	val = 50;
+	JDList_append(&list, &val);
+    
+	key = 40;
+	JDList_remove_before(&list, &key, &cmp); // the list should now contain: 40,20,50. Nothing to remove before 40.
+    
+	JDList_dealloc(&list);
+    
+	return 0;
+}
+</pre>
+</a>

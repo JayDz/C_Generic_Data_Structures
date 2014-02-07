@@ -1,0 +1,388 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JDStack.h</title>
+<style type="text/css">
+.header {	font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+}
+.prototypes {	font-family:"Courier New", Courier, monospace;
+}
+</style>
+</head>
+
+<body>
+<p class="header"><strong>JDStack</strong></p>
+<p><a href="#JDStack_init">JDStack_init</a></p>
+<p><a href="#JDStack_dealloc">JDStack_dealloc</a></p>
+<p><a href="#JDStack_push">JDStack_push</a></p>
+<p><a href="#JDStack_pop">JDStack_pop</a></p>
+<p><a href="#JDStack_empty">JDStack_empty</a></p>
+<p><a href="#JDStack_count">JDStack_count</a></p>
+<p><a href="#JDStack_array">JDStack_array</a></p>
+<p><a href="#JDStack_peek">JDStack_peek</a></p>
+<hr>
+<p class="header">&nbsp;</p><a id="JDStack_init">
+<p><span class="header">Function: </span>Prepares a JDStack for operations. MUST call JDStack_dealloc when you're done with your work or memory will be leaked.</p>
+<blockquote>
+  <p class="prototypes">int JDStack_init(struct JDStack* stack, size_t element_size, void(*dtor)(void*));</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">size_t element_size</span>:</td>
+      <td>The size of the type we intend to store into stack. </td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void(*dtor)(void*)</span>: </td>
+      <td>A pointer to a function which will behave like a destructor for the values stored inside our stack. If we don't need a destructor, pass NULL as its value.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_NULLPTR: Returned if stack parameter is NULL.</p>
+  <p>JD_FMALLOC: Returned if the allocation of dynamic memory failed. </p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	// do work here.
+    
+	JDStack_dealloc(&stack);
+    
+	return 0;
+}   
+</pre>
+</a>
+<hr><a id="JDStack_dealloc">
+<p><span class="header">Function: </span>Destroys a stack by freeing all elements remaining in the stack. If a destructor was passed to JDStack_init it will be called for each element. </p>
+<blockquote>
+  <p class="prototypes">int JDStack_dealloc(struct JDStack* stack);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_NULLPTR: Returned if stack parameter is NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store struct Foo's, need a custom destructor since struct Foo contains dynamic memory. */
+
+struct Foo {
+	int* ptr;
+};
+
+void dtor(void* elem)
+{
+	struct Foo* tmp = (struct Foo*)elem;
+	free(tmp->ptr);
+}
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(struct Foo), &dtor);
+    
+	// do work here.
+    
+	JDStack_dealloc(&stack);
+    
+	return 0;
+}   
+</pre>
+</a>
+<hr><a id="JDStack_push">
+<p><span class="header">Function: </span>Pushes value to top of stack.</p>
+<blockquote>
+  <p class="prototypes">int JDStack_push(struct JDStack* stack, void* value);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* value</span></td>
+      <td>A pointer to the address containing the value we wish to push onto the top of stack.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_NULLPTR: Returned if stack parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if value points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	int value = 10;
+	JDStack_push(&stack, &value);
+    
+	JDStack_dealloc(&stack);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDStack_pop">
+<p><span class="header">Function: </span>Pops the top of the stack and copies value into destination.</p>
+<blockquote>
+  <p class="prototypes">int JDStack_pop(struct JDStack* stack, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* dest</span></td>
+      <td>A pointer to the address where we're to copy the element into.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_EMPTY: Stack is empty.</p>
+  <p>JD_NULLPTR: Returned if stack parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	int value = 10;
+	int dest = 0;
+	JDStack_push(&stack, &value);
+    
+	JDStack_pop(&stack, &dest);
+    
+	JDStack_dealloc(&stack);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDStack_empty">
+<p><span class="header">Function: </span>Returns TRUE(1) if stack is empty. Otherwise, returns FALSE(0).</p>
+<blockquote>
+  <p class="prototypes">int JDStack_empty(struct JDStack* stack);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>TRUE: Stack is empty.</p>
+  <p>FALSE: Stack is not empty.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	int value = 10;
+	int empty = TRUE;
+	JDStack_push(&stack, &value);
+	empty = JDStack_empty(&stack);
+    
+	JDStack_dealloc(&stack);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDStack_count">
+<p><span class="header">Function: </span>Returns the number of elements currently on the stack.</p>
+<blockquote>
+  <p class="prototypes">size_t JDStack_count(struct JDStack* stack);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>Number of elements on stack.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	int value = 10;
+	JDStack_push(&stack, &value);
+	value = 20;
+	JDStack_push(&stack, &value);
+    
+	printf("Size of stack is: %d\n", JDStack_count(&stack));
+    
+	JDStack_dealloc(&stack);
+    
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDStack_array">
+<p><span class="header">Function: </span>Stores values in stack into an array dest. dest should point to block large enough for all stack values. <strong><u>WARNING</u></strong>: Stack retains ownership of elements and will free all values after a call to dealloc. </p>
+<blockquote>
+  <p class="prototypes">int JDStack_array(struct JDStack* stack, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* dest</span></td>
+      <td>A pointer to the address of an array large enough to fit all elements in stack.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_EMPTY: Stack is empty.</p>
+  <p>JD_NULLPTR: Returned if stack parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	int i;
+	for (i = 0; i < 5000; ++i)
+		JDStack_push(&stack, &i);
+    
+	int* arr = malloc(sizeof(int) * JDStack_count(&stack));
+	JDStack_array(&stack, arr);
+    
+	free(arr); 
+	JDStack_dealloc(&stack);
+   
+	return 0;
+}   
+</pre></a>
+<hr><a id="JDStack_peek">
+<p><span class="header">Function: </span>Stores the element at the top of the stack into dest, but does not remove it from the stack.</p>
+<blockquote>
+  <p class="prototypes">int JDStack_peek(struct JDStack* stack, void* dest);</p>
+</blockquote>
+<p class="header">Parameters:</p>
+<blockquote>
+  <table width="1271" border="0">
+    <tr>
+      <td width="290"><span class="prototypes">struct JDStack* stack</span>:</td>
+      <td width="971">A pointer to a struct of type JDStack.</td>
+    </tr>
+    <tr>
+      <td><span class="prototypes">void* dest</span></td>
+      <td>A pointer to the address where we're to copy the element at the top of stack.</td>
+    </tr>
+  </table>
+</blockquote>
+<p class="header">Return Value:</p>
+<blockquote>
+  <p>JD_SUCCESS: Returned if all went well. </p>
+  <p>JD_EMPTY: Stack is empty.</p>
+  <p>JD_NULLPTR: Returned if stack parameter is NULL.</p>
+  <p>JD_NULLPTR_ARG: Returned if dest points to NULL.</p>
+</blockquote>
+<p class="header">Example Usage:</p>
+<pre> 
+#include "JDStack.h"
+
+/* Create a stack to store ints, no need for a custom destructor since int is a primative type. */
+
+int main(void)
+{
+	struct JDStack stack;
+	JDStack_init(&stack, sizeof(int), NULL);
+    
+	int value = 10;
+	JDStack_push(&stack, &value);
+    
+	int top;
+	JDStack_peek(&stack, &top);
+	
+	JDStack_dealloc(&stack);
+   
+	return 0;
+}  </pre></a>
+</body>
+</html>
+

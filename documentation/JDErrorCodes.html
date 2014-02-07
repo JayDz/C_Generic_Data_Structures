@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JDError_codes.h</title>
+<style type="text/css">
+.header {	font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
+}
+.prototypes {	font-family:"Courier New", Courier, monospace;
+}
+</style>
+</head>
+<body>
+<p class="header"><strong>JDError_codes</strong></p>
+<table width="1309" height="221" border="0">
+  <tr>
+    <td width="168"><span class="header">JD_FMALLOC:</span></td>
+    <td width="1125">Returned when a JD function failed to allocate heap memory.</td>
+  </tr>
+  <tr>
+    <td><span class="header">JD_NULLPTR:</span></td>
+    <td>Returned when a pointer to a JD data structure is NULL.</td>
+  </tr>
+  <tr>
+    <td><span class="header">JD_NULLPTR_ARG:</span></td>
+    <td>Returned when a pointer argument sent to a JD function is NULL. E.g push, pop, enqueue, dequeue all require an extra argument pointing to a value or a destination to store a value.</td>
+  </tr>
+  <tr>
+    <td><span class="header">JD_EMPTY:</span></td>
+    <td>Returned when client code attempts to query an empty data structure.</td>
+  </tr>
+  <tr>
+    <td><span class="header">JD_SUCCESS:</span></td>
+    <td>Returned when operation succeeded.</td>
+  </tr>
+  <tr>
+    <td class="header">JD_NOTFOUND:</td>
+    <td>Returned when an item was not found in collection.</td>
+  </tr>
+</table>
+<p class="header">&nbsp;</p>
+</body>
+</html>
